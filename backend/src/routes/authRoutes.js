@@ -12,8 +12,32 @@ const generateToken = (id) => {
 };
 
 router.post("/login", async(req, res) => {
-  res.send("Login route");
+try {
+  const { username, email, password } = req.body;
+  // Validate input
+  if ((!username || !email) || !password) {
+
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  // Check if user exists
+  const user = await User.findOne({ $or: [{ username }, { email }] });
+  if (!user) return res.status(400).json({ message: "Invalid credentials" });
+
+  // Check password
+  const isMatch = await user.comparePassword(password);
+  if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+
+  const token = generateToken(user._id);
+  res.status(200).json({ token, user: { _id: user._id, username: user.username, email: user.email, profilePicture: user.profilePicture } });  
+} catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+  
 });
+
+
 router.post("/register", async (req, res) => {
   try {
     const { username,email, password } = req.body;
