@@ -41,3 +41,35 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+router.post('/delete',authMiddleware, async (req, res) => {
+    try {
+      const { movieId } = req.body;
+      const movie = await Movie.findById(movieId);
+
+      if (!movie) {
+        return res.status(404).json({ message: 'Movie not found' });
+      }
+      if (movie.isDeleted) {
+        return res.status(400).json({ message: 'Movie already deleted' });
+      }
+
+      if (movie.user.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized to delete this movie' });
+      }
+      
+      // const publicId = movie.moviePoster.split('/').pop().split('.')[0];
+      // await cloudinary.uploader.destroy(`movie_posters/${publicId}`);
+
+      movie.isDeleted = true;
+      await movie.save();
+    
+
+      res.status(200).json({ message: 'Movie deleted successfully' });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+      
+    }
+})
+
+export default router;
