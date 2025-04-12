@@ -9,17 +9,21 @@ const router = express.Router();
 // Create a new movie
 router.post('/',authMiddleware, async (req, res) => {
   try {
-    // Validate request body
+    debugger
+    let imageUrl;
     const { title, description, rating, releaseDate, genre, director, cast, moviePoster } = req.body;
     if (!title || !genre) {
       return res.status(400).json({ message: 'Title and genre are required' });
     }
 
-    const image =await cloudinary.uploader.upload(moviePoster, {
+    if(moviePoster) {
+     const image =await cloudinary.uploader.upload(moviePoster, {
       folder: 'movie_posters',
     });
-    // Create a new movie instance
-    const movie = new Movie({...req.body, moviePoster: image.secure_url, user: req.user._id});
+    imageUrl= image.secure_url
+    }
+
+    const movie = new Movie({...req.body, userId: req.user._id,...(imageUrl && { moviePoster: imageUrl })});
 
     await movie.save();
     res.status(201).json(movie);
