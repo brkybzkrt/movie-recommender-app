@@ -10,7 +10,7 @@ export const useAuthStore = create((set) => ({
    try {
     set({isLoading:true});
 
-    const response = await fetch("http://127.0.0.1:3000/api/auth/register", {
+    const response = await fetch("https://movie-recommender-app-3g9v.onrender.com/api/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -33,12 +33,16 @@ export const useAuthStore = create((set) => ({
     set({token})
     set({isLoading:false})
 
-    
+
     return{success:true}
     
    } catch (error) {
     console.log(error)
     set({isLoading:false})
+    return {
+      success: false,
+      error: error.message || 'Registration failed. Please try again.'
+    }
    }
   }
 }))
