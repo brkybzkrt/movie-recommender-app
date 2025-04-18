@@ -1,7 +1,9 @@
 import express from "express";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
+dotenv.config();
 
 const router = express.Router();
 
@@ -43,7 +45,7 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
     if(password.length < process.env.PASSWORD_MIN_LENGTH) {
-      return res.status(400).json({ message: `Password must be at least ${PASSWORD_MIN_LENGTH} characters long` });
+      return res.status(400).json({ message: `Password must be at least ${process.env.PASSWORD_MIN_LENGTH} characters long` });
     }
 
     // Check if user already exists
