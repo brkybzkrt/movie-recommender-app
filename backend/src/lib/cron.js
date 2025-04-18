@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const job = new cron.CronJob("*/1 * * * *", () => {
+const job = new cron.CronJob("*/12 * * * *", () => {
   https
     .get(process.env.API_URL, (res) => {
       if (res.statusCode === 200) {
