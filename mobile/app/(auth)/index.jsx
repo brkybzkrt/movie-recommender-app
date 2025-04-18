@@ -1,40 +1,43 @@
 import {
   View,
+  Image,
   Text,
   TextInput,
   TouchableOpacity,
+  ActivityIndicator,
   Keyboard,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator,
-  Alert
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
-import styles from "../../assets/styles/signup.styles.js";
+import styles from "../../assets/styles/login.styles.js";
 import { Ionicons } from "@expo/vector-icons";
-import COLORS from "../../constants/colors";
+import COLORS from "../../constants/colors.js";
+import { Link } from "expo-router";
+import { useAuthStore } from "../../store/authStore.js";
 import { useRouter } from "expo-router";
-import { useAuthStore } from "../../store/authStore";
 
-export default function Signup() {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
+export default function Login() {
+  const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(true);
-  const { register, isLoading } = useAuthStore();
-
-  const handleSignup = async () => {
-    const result = await register({ username, email, password });
-    if (result.success) {
-      router.replace("/(auth)");
-    } else {
-      Alert.alert("Error", result.error);
-    }
-  };
-
+  const { login, isLoading } = useAuthStore();
   const router = useRouter();
 
+  const handleLogin = async () => {
+    try {
+      const result = await login({ usernameOrEmail, password });
+      if (result.success) {
+        router.replace("/(tabs)");
+      } else {
+        Alert.alert("Error", result.error);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
@@ -42,35 +45,17 @@ export default function Signup() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View style={styles.container}>
+          <View style={styles.topIllustration}>
+            <Image
+              source={require("../../assets/images/movie.png")}
+              style={styles.illustrationImage}
+              resizeMode="contain"
+            />
+          </View>
           <View style={styles.card}>
-            <View style={styles.header}>
-              <Text style={styles.title}>Sign Up</Text>
-              <Text style={styles.subtitle}>
-                Create an account to start using our app
-              </Text>
-            </View>
-
             <View style={styles.formContainer}>
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Username</Text>
-                <View style={styles.inputContainer}>
-                  <Ionicons
-                    name="person-outline"
-                    size={20}
-                    color={COLORS.primary}
-                    style={styles.inputIcon}
-                  />
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Enter your username"
-                    placeholderTextColor={COLORS.placeholderText}
-                    value={username}
-                    onChangeText={setUsername}
-                  />
-                </View>
-              </View>
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Email</Text>
+                <Text style={styles.label}>Email or Username</Text>
                 <View style={styles.inputContainer}>
                   <Ionicons
                     name="mail-outline"
@@ -80,12 +65,10 @@ export default function Signup() {
                   />
                   <TextInput
                     style={styles.input}
-                    placeholder="Enter your email"
+                    placeholder="Enter your email or username"
                     placeholderTextColor={COLORS.placeholderText}
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
+                    value={usernameOrEmail}
+                    onChangeText={setUsernameOrEmail}
                   />
                 </View>
               </View>
@@ -120,21 +103,22 @@ export default function Signup() {
               </View>
               <TouchableOpacity
                 style={styles.button}
-                onPress={handleSignup}
+                onPress={handleLogin}
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text style={styles.buttonText}>Sign Up</Text>
+                  <Text style={styles.buttonText}>Login</Text>
                 )}
               </TouchableOpacity>
               <View style={styles.footer}>
-                <Text style={styles.footerText}>Already have an account?</Text>
-
-                <TouchableOpacity onPress={() => router.back()}>
-                  <Text style={styles.linkText}>Login</Text>
-                </TouchableOpacity>
+                <Text style={styles.footerText}>Don't have an account?</Text>
+                <Link href="/signup" asChild style={styles.link}>
+                  <TouchableOpacity>
+                    <Text style={styles.linkText}>Sign up</Text>
+                  </TouchableOpacity>
+                </Link>
               </View>
             </View>
           </View>
