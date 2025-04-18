@@ -18,13 +18,13 @@ export const useAuthStore = create((set) => ({
       body: JSON.stringify({ username, email, password }),
     });
 
-    const {user,token} = await response.json();
+    const data = await response.json();
 
     if(!response.ok) {
-      throw new Error("Failed to register");
+      throw new Error(data.message);
     }
 
-    
+    const {user,token} = data;
     await AsyncStorage.setItem("token",token);
     await AsyncStorage.setItem("user",JSON.stringify(user));
 
