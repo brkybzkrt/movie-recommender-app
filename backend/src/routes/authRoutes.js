@@ -15,13 +15,13 @@ const generateToken = (id) => {
 
 router.post("/login", async(req, res) => {
 try {
-  const { username, email, password } = req.body;
-  if ((!username && !email) || !password) {
+  const { usernameOrEmail, password } = req.body;
+  if (!usernameOrEmail || !password) {
 
     return res.status(400).json({ message: "All fields are required" });
   }
 
-  const user = await User.findOne({ $or: [{ username }, { email }] });
+  const user = await User.findOne({ $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }] });
   if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
   const isMatch = await user.comparePassword(password);
