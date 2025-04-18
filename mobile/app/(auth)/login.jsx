@@ -6,13 +6,23 @@ import COLORS from '../../constants/colors'
 import { Link } from 'expo-router'
 
 export default function Login() {
-  const [email, setEmail] = useState('');
+  const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
+  const { login, isLoading } = useAuthStore();
 
-
-  const handleLogin = () => { }
+  const handleLogin = async (usernameOrEmail, password) => {
+    try {
+        const result = await login({ usernameOrEmail, password });
+        if (result.success) {
+          router.replace("/(tabs)");
+        } else {
+          Alert.alert("Error", result.error);
+        }
+    } catch (error) {
+      console.log(error);
+    }
+   }
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -28,10 +38,10 @@ export default function Login() {
           <View style={styles.card}>
             <View style={styles.formContainer}>
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>Email</Text>
+                <Text style={styles.label}>Email or Username</Text>
                 <View style={styles.inputContainer}>
                   <Ionicons name="mail-outline" size={20} color={COLORS.primary} style={styles.inputIcon} />
-                  <TextInput style={styles.input} placeholder="Enter your email" placeholderTextColor={COLORS.placeholderText} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
+                  <TextInput style={styles.input} placeholder="Enter your email or username" placeholderTextColor={COLORS.placeholderText} value={usernameOrEmail} onChangeText={setUsernameOrEmail} keyboardType="default" autoCapitalize="none" />
                 </View>
               </View>
               <View style={styles.inputGroup}>
