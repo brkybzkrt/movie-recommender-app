@@ -9,10 +9,9 @@ const router = express.Router();
 // Create a new movie
 router.post('/',authMiddleware, async (req, res) => {
   try {
-    debugger
     let imageUrl;
-    const { title, description, rating, releaseDate, genre, director, cast, moviePoster } = req.body;
-    if (!title || !genre) {
+    const { title, description, rating, releaseDate, genres, director, cast, moviePoster } = req.body;
+    if (!title || !genres) {
       return res.status(400).json({ message: 'Title and genre are required' });
     }
 
@@ -23,7 +22,7 @@ router.post('/',authMiddleware, async (req, res) => {
     imageUrl= image.secure_url
     }
 
-    const movie = new Movie({...req.body, userId: req.user._id,...(imageUrl && { moviePoster: imageUrl })});
+    const movie = new Movie({...req.body, userId: req.user._id,genres,...(imageUrl && { moviePoster: imageUrl })});
 
     await movie.save();
     res.status(201).json(movie);
@@ -38,7 +37,7 @@ router.get('/', async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    const movies = await Movie.find().populate('user', 'username profilePicture').sort({ createdAt: -1 }).skip(skip).limit(limit);
+    const movies = await Movie.find().populate('user', 'username profilePicture').populate('genre', 'name _id').sort({ createdAt: -1 }).skip(skip).limit(limit);
     const totalMovies = await Movie.countDocuments();
     res.status(200).json({movies, totalMovies, currentPage: page, totalPages: Math.ceil(totalMovies / limit)});
   } catch (error) {
