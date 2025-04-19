@@ -22,17 +22,15 @@ import { Rating } from "react-native-ratings";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { MultiSelect } from 'react-native-element-dropdown';
+import { useQuery } from '@tanstack/react-query';
+import { getGenres } from '../../services/genreService';
 
 export default function Create() {
-
-  const dataGenre = [
-    { id: '1', name: 'Action' },
-    { id: '2', name: 'Comedy' },
-    { id: '3', name: 'Drama' },
-    { id: '4', name: 'Horror' },
-    { id: '5', name: 'Sci-Fi' },
-    { id: '6', name: 'Romance' },
-  ];
+  // Fetch genres using React Query
+  const { data: genres, isLoading: genresLoading, error: genresError } = useQuery({
+    queryKey: ['genres'],
+    queryFn: getGenres,
+  });
 
   const router = useRouter();
   const { user } = useAuthStore();
@@ -85,9 +83,7 @@ export default function Create() {
       }
     }
   };
-  // const ratingCompleted = (rating) => {
-  //   setRating(rating);
-  // };
+
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -156,9 +152,10 @@ export default function Create() {
                   selectedTextStyle={styles.selectedTextStyle}
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
-                  data={dataGenre}
+                  data={genres || []}
+                  loading={genresLoading}
                   labelField="name"
-                  valueField="id"
+                  valueField="_id"
                   placeholder="Select Genres"
                   value={genre}
                   search

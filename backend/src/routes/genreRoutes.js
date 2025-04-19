@@ -7,7 +7,7 @@ const router = express.Router();
 // Get all genres
 router.get('/', async (req, res) => {
   try {
-    const genres = await Genre.find();
+    const genres = await Genre.find().select('-__v -isDeleted -createdAt -updatedAt');
     res.status(200).json(genres);
   } catch (error) {
     res.status(500).json({ message: error.message });
