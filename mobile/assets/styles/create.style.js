@@ -50,7 +50,40 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 8,
     color: COLORS.textPrimary,
+  },
+  dropdown: {
+    height: 50,
+    backgroundColor: COLORS.white,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  placeholderStyle: {
+    fontSize: 14,
+    color: COLORS.placeholderText,
+  },
+  selectedTextStyle: {
+    fontSize: 14,
+    color: COLORS.textPrimary,
     fontWeight: "500",
+  },
+  selectedStyle: {
+    borderRadius: 12,
+    backgroundColor: COLORS.background,
+    margin: 5,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 14,
+    color: COLORS.textPrimary,
+  },
+  icon: {
+    marginRight: 5,
   },
   inputContainer: {
     flexDirection: "row",

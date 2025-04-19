@@ -20,10 +20,11 @@ const movieSchema = new mongoose.Schema({
     type: Date,
     required: false,
   },
-  genre: {
-    type: [String],
+  genres: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Genre',
     required: true,
-  },
+  }],
   director: {
     type: String,
     required: false,
