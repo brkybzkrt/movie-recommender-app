@@ -21,19 +21,24 @@ import COLORS from "../../constants/colors";
 import { Rating } from "react-native-ratings";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import { MultiSelect } from 'react-native-element-dropdown';
-import { useQuery } from '@tanstack/react-query';
-import { getGenres } from '../../services/genreService';
+import { MultiSelect } from "react-native-element-dropdown";
+import { useQuery } from "@tanstack/react-query";
+import { getGenres } from "../../services/genreService";
+import { API_URL_LOCAL } from "../../constants/config";
 
 export default function Create() {
   // Fetch genres using React Query
-  const { data: genres, isLoading: genresLoading, error: genresError } = useQuery({
-    queryKey: ['genres'],
+  const {
+    data: genres,
+    isLoading: genresLoading,
+    error: genresError,
+  } = useQuery({
+    queryKey: ["genres"],
     queryFn: getGenres,
   });
 
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { token } = useAuthStore();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -47,7 +52,58 @@ export default function Create() {
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  const handleCreate = async () => {};
+
+  const handleCreate = async () => {
+    try {
+      if (!title || !description || !rating || !genre.length || !moviePoster) {
+        Alert.alert("Please fill in all fields");
+        return;
+      }
+      setLoading(true);
+      const uriParts = selectedImage.split(".");
+      const fileType = uriParts[uriParts.length - 1];
+      const imageType = fileType ? `image/${fileType.toLowerCase()}` : "image/jpeg";
+      
+      const imageDataUrl = `data:${imageType};base64,${moviePoster}`;
+
+      const response = await fetch(`${API_URL_LOCAL}/movies`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          rating,
+          genres: genre,
+          moviePoster: imageDataUrl
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+      Alert.alert("Success", "Movie created successfully");
+
+      setSelectedImage(null);
+      setMoviePoster(null);
+      setTitle("");
+      setDescription("");
+      setRating(3);
+      setGenre([]);
+
+      router.replace("/");
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Failed to create movie", error.message);
+    }
+    finally {
+      setLoading(false);
+    }
+  };
 
   const pickOutImage = async () => {
     if (Platform.OS !== "web") {
@@ -83,7 +139,6 @@ export default function Create() {
       }
     }
   };
-
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
