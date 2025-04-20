@@ -6,10 +6,15 @@ import { useSegments } from "expo-router";
 import { useAuthStore } from "../store/authStore";
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BannerAdSize, BannerAd, TestIds } from 'react-native-google-mobile-ads';
+
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
+
+
+  
   const router = useRouter();
   const segment = useSegments();
 
@@ -42,6 +47,15 @@ export default function RootLayout() {
           </Stack>
         </SafeScreen>
         <StatusBar style="dark"/>
+        <BannerAd
+          size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+          unitId={TestIds.BANNER}
+          requestOptions={{requestNonPersonalizedAdsOnly: true,
+            networkExtras: {
+              collapsible: "bottom"
+            }
+          }}        
+          />
       </SafeAreaProvider>
     </QueryClientProvider>
   )
