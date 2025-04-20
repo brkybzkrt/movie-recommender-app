@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_URL_LOCAL } from "../constants/config";
 
 export const useAuthStore = create((set) => ({
   user: null,
@@ -10,7 +11,7 @@ export const useAuthStore = create((set) => ({
       set({ isLoading: true });
 
       const response = await fetch(
-        "https://movie-recommender-app-3g9v.onrender.com/api/auth/register",
+        `${API_URL_LOCAL}/auth/register`,
         {
           method: "POST",
           headers: {
@@ -75,7 +76,7 @@ export const useAuthStore = create((set) => ({
       console.log("Password:", password);
       set({ isLoading: true });
 
-      const response = await fetch("https://movie-recommender-app-3g9v.onrender.com/api/auth/login", {
+      const response = await fetch(`${API_URL_LOCAL}/auth/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
